@@ -1,0 +1,476 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>在线 ICO 图标转换器 - 免费将图片转换为 ICO 格式</title>
+    <meta name="description" content="免费在线将图片转换为 ICO 格式，支持多种尺寸（16x16 到 256x256），简单易用，无需安装软件。">
+    <meta name="keywords" content="ico转换,ico生成器,图片转ico,在线ico转换,ico图标制作,ico格式转换,ico图标生成器,ico文件转换">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+        }
+        .container {
+            max-width: 800px;
+            padding: 2rem;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 0 30px rgba(0,0,0,0.1);
+            margin: 2rem auto;
+        }
+        .preview-image {
+            max-width: 100%;
+            height: auto;
+            margin: 1rem 0;
+            border-radius: 10px;
+            display: none;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+        .loading {
+            display: none;
+            margin: 1rem 0;
+        }
+        .btn-primary {
+            background-color: #0d6efd;
+            border-color: #0d6efd;
+            padding: 0.5rem 2rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-primary:hover {
+            background-color: #0b5ed7;
+            border-color: #0a58ca;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .language-selector {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+        }
+        .custom-file-upload {
+            display: block;
+            padding: 0.75rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            line-height: 1.5;
+            color: #212529;
+            background-color: #fff;
+            border: 2px dashed #ced4da;
+            border-radius: 10px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s ease;
+            margin: 1rem 0;
+        }
+        .custom-file-upload:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        #imageInput {
+            display: none;
+        }
+        .file-name {
+            margin-top: 0.5rem;
+            font-size: 0.875rem;
+            color: #6c757d;
+        }
+        .features {
+            margin: 2rem 0;
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 10px;
+        }
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin: 0.5rem 0;
+        }
+        .feature-item i {
+            color: #0d6efd;
+            margin-right: 0.5rem;
+        }
+        .size-options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(100px, 1fr));
+            gap: 0.5rem;
+            margin: 1rem 0;
+        }
+        .size-option {
+            padding: 0.5rem;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .size-option:hover {
+            border-color: #0d6efd;
+            background-color: #f8f9fa;
+        }
+        .size-option.active {
+            border-color: #0d6efd;
+            background-color: #e7f1ff;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 2rem;
+            padding-top: 1rem;
+            border-top: 1px solid #dee2e6;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+    <div class="language-selector">
+        <select id="languageSelect" class="form-select">
+            <option value="zh-CN">简体中文</option>
+            <option value="en">English</option>
+            <option value="ja">日本語</option>
+            <option value="ko">한국어</option>
+        </select>
+    </div>
+
+    <div class="container">
+        <h1 class="text-center mb-4" data-i18n="title">在线 ICO 图标转换器</h1>
+        <p class="text-center text-muted mb-4" data-i18n="description">免费在线将图片转换为 ICO 格式，支持多种尺寸，简单易用</p>
+
+        <div class="features">
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span data-i18n="feature1">支持多种图片格式（JPG、PNG、GIF等）</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span data-i18n="feature2">支持多种尺寸（16x16 到 256x256）</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span data-i18n="feature3">完全免费，无需注册</span>
+            </div>
+            <div class="feature-item">
+                <i class="bi bi-check-circle-fill"></i>
+                <span data-i18n="feature4">在线转换，无需下载软件</span>
+            </div>
+        </div>
+
+        <div class="mb-4">
+            <label for="imageInput" class="form-label" data-i18n="selectImage">选择图片</label>
+            <label for="imageInput" class="custom-file-upload" data-i18n="browseFile">
+                点击或拖拽图片到这里
+            </label>
+            <input type="file" id="imageInput" accept="image/*">
+            <div class="file-name" id="fileName"></div>
+        </div>
+
+        <div class="mb-4">
+            <label class="form-label" data-i18n="selectSize">选择尺寸</label>
+            <div class="size-options">
+                <div class="size-option" data-size="16">16x16</div>
+                <div class="size-option" data-size="32">32x32</div>
+                <div class="size-option" data-size="48">48x48</div>
+                <div class="size-option" data-size="64">64x64</div>
+                <div class="size-option" data-size="128">128x128</div>
+                <div class="size-option" data-size="256">256x256</div>
+            </div>
+        </div>
+
+        <div class="text-center">
+            <img id="preview" class="preview-image" alt="预览图">
+            <div class="loading">
+                <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden" data-i18n="processing">处理中...</span>
+                </div>
+                <p class="mt-2" data-i18n="processing">正在处理图片...</p>
+            </div>
+            <button id="convertBtn" class="btn btn-primary" disabled data-i18n="generate">生成 ICO</button>
+        </div>
+
+        <div class="footer">
+            <p data-i18n="footer">© 2024 ICO 图标转换器 - 免费在线转换图片为 ICO 格式</p>
+        </div>
+    </div>
+
+    <script>
+        // 多语言支持
+        const translations = {
+            'zh-CN': {
+                title: '在线 ICO 图标转换器',
+                description: '免费在线将图片转换为 ICO 格式，支持多种尺寸，简单易用',
+                selectImage: '选择图片',
+                browseFile: '点击或拖拽图片到这里',
+                selectSize: '选择尺寸',
+                processing: '正在处理图片...',
+                generate: '生成 ICO',
+                success: 'ICO 文件生成成功！',
+                error: '处理图片时出错: ',
+                selectFile: '请先选择图片',
+                feature1: '支持多种图片格式（JPG、PNG、GIF等）',
+                feature2: '支持多种尺寸（16x16 到 256x256）',
+                feature3: '完全免费，无需注册',
+                feature4: '在线转换，无需下载软件',
+                footer: '© 2024 ICO 图标转换器 - 免费在线转换图片为 ICO 格式'
+            },
+            'en': {
+                title: 'Online ICO Icon Converter',
+                description: 'Free online tool to convert images to ICO format, supporting multiple sizes',
+                selectImage: 'Select Image',
+                browseFile: 'Click or drag image here',
+                selectSize: 'Select Size',
+                processing: 'Processing image...',
+                generate: 'Generate ICO',
+                success: 'ICO file generated successfully!',
+                error: 'Error processing image: ',
+                selectFile: 'Please select an image first',
+                feature1: 'Support multiple image formats (JPG, PNG, GIF, etc.)',
+                feature2: 'Support multiple sizes (16x16 to 256x256)',
+                feature3: 'Completely free, no registration required',
+                feature4: 'Online conversion, no software download needed',
+                footer: '© 2024 ICO Icon Converter - Free Online Image to ICO Converter'
+            },
+            'ja': {
+                title: 'オンライン ICO アイコン変換ツール',
+                description: '画像を ICO 形式に変換する無料オンラインツール、複数のサイズに対応',
+                selectImage: '画像を選択',
+                browseFile: 'クリックまたは画像をドラッグ',
+                selectSize: 'サイズを選択',
+                processing: '画像を処理中...',
+                generate: 'ICO を生成',
+                success: 'ICO ファイルが正常に生成されました！',
+                error: '画像処理エラー: ',
+                selectFile: '画像を選択してください',
+                feature1: '複数の画像形式に対応（JPG、PNG、GIF等）',
+                feature2: '複数のサイズに対応（16x16 から 256x256）',
+                feature3: '完全無料、登録不要',
+                feature4: 'オンライン変換、ソフトウェア不要',
+                footer: '© 2024 ICO アイコン変換ツール - 無料オンライン画像変換'
+            },
+            'ko': {
+                title: '온라인 ICO 아이콘 변환기',
+                description: '이미지를 ICO 형식으로 변환하는 무료 온라인 도구, 다양한 크기 지원',
+                selectImage: '이미지 선택',
+                browseFile: '클릭하거나 이미지를 여기에 드래그',
+                selectSize: '크기 선택',
+                processing: '이미지 처리 중...',
+                generate: 'ICO 생성',
+                success: 'ICO 파일이 성공적으로 생성되었습니다!',
+                error: '이미지 처리 오류: ',
+                selectFile: '이미지를 먼저 선택하세요',
+                feature1: '다양한 이미지 형식 지원 (JPG, PNG, GIF 등)',
+                feature2: '다양한 크기 지원 (16x16에서 256x256)',
+                feature3: '완전 무료, 등록 불필요',
+                feature4: '온라인 변환, 소프트웨어 다운로드 불필요',
+                footer: '© 2024 ICO 아이콘 변환기 - 무료 온라인 이미지 변환'
+            }
+        };
+
+        // 更新页面语言
+        function updateLanguage(lang) {
+            document.querySelectorAll('[data-i18n]').forEach(element => {
+                const key = element.getAttribute('data-i18n');
+                if (translations[lang][key]) {
+                    if (element.tagName === 'INPUT' || element.tagName === 'TEXTAREA') {
+                        element.placeholder = translations[lang][key];
+                    } else {
+                        element.textContent = translations[lang][key];
+                    }
+                }
+            });
+            document.documentElement.lang = lang;
+        }
+
+        // 语言切换事件
+        document.getElementById('languageSelect').addEventListener('change', (e) => {
+            updateLanguage(e.target.value);
+        });
+
+        // 初始化语言
+        updateLanguage('zh-CN');
+
+        const imageInput = document.getElementById('imageInput');
+        const sizeSelect = document.getElementById('sizeSelect');
+        const preview = document.getElementById('preview');
+        const convertBtn = document.getElementById('convertBtn');
+        const loading = document.querySelector('.loading');
+        const fileName = document.getElementById('fileName');
+        const sizeOptions = document.querySelectorAll('.size-option');
+
+        // 尺寸选择
+        let selectedSize = 16;
+        sizeOptions.forEach(option => {
+            option.addEventListener('click', () => {
+                sizeOptions.forEach(opt => opt.classList.remove('active'));
+                option.classList.add('active');
+                selectedSize = parseInt(option.dataset.size);
+            });
+        });
+        sizeOptions[0].classList.add('active');
+
+        // 拖放功能
+        const dropZone = document.querySelector('.custom-file-upload');
+        
+        ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, preventDefaults, false);
+        });
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, highlight, false);
+        });
+
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, unhighlight, false);
+        });
+
+        function highlight(e) {
+            dropZone.classList.add('border-primary');
+        }
+
+        function unhighlight(e) {
+            dropZone.classList.remove('border-primary');
+        }
+
+        dropZone.addEventListener('drop', handleDrop, false);
+
+        function handleDrop(e) {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            if (file && file.type.startsWith('image/')) {
+                handleFile(file);
+            }
+        }
+
+        function handleFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                preview.src = e.target.result;
+                preview.style.display = 'block';
+                convertBtn.disabled = false;
+                fileName.textContent = file.name;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // 预览图片
+        imageInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFile(file);
+            }
+        });
+
+        // 转换图片
+        convertBtn.addEventListener('click', async function() {
+            const file = imageInput.files[0];
+            if (!file) {
+                alert(translations[document.documentElement.lang].selectFile);
+                return;
+            }
+
+            try {
+                loading.style.display = 'block';
+                convertBtn.disabled = true;
+
+                // 创建图片对象
+                const img = await createImageBitmap(file);
+                const size = selectedSize;
+                
+                // 创建 Canvas
+                const canvas = document.createElement('canvas');
+                canvas.width = size;
+                canvas.height = size;
+                const ctx = canvas.getContext('2d');
+                
+                // 计算缩放比例
+                const scale = Math.min(size / img.width, size / img.height);
+                const width = img.width * scale;
+                const height = img.height * scale;
+                
+                // 计算居中位置
+                const x = (size - width) / 2;
+                const y = (size - height) / 2;
+                
+                // 清空画布
+                ctx.clearRect(0, 0, size, size);
+                
+                // 绘制图片
+                ctx.drawImage(img, x, y, width, height);
+                
+                // 获取 PNG 数据
+                const pngData = await new Promise(resolve => {
+                    canvas.toBlob(resolve, 'image/png');
+                });
+                
+                // 创建 ICO 文件头
+                const header = new Uint8Array(22);
+                header[0] = 0; // 保留
+                header[1] = 0; // 保留
+                header[2] = 1; // 图像类型（1 = ICO）
+                header[3] = 0; // 保留
+                header[4] = 1; // 图像数量
+                header[5] = 0; // 保留
+                header[6] = size; // 图像宽度
+                header[7] = size; // 图像高度
+                header[8] = 0; // 颜色数量（0 = 24位）
+                header[9] = 0; // 保留
+                header[10] = 1; // 颜色平面
+                header[11] = 0;
+                header[12] = 32; // 位深度
+                header[13] = 0;
+
+                // 读取 PNG 数据
+                const pngArrayBuffer = await pngData.arrayBuffer();
+                const pngUint8Array = new Uint8Array(pngArrayBuffer);
+
+                // 设置图像大小
+                const imageSize = pngUint8Array.length;
+                header[14] = imageSize & 0xFF;
+                header[15] = (imageSize >> 8) & 0xFF;
+                header[16] = (imageSize >> 16) & 0xFF;
+                header[17] = (imageSize >> 24) & 0xFF;
+
+                // 设置图像数据偏移
+                const offset = 22;
+                header[18] = offset & 0xFF;
+                header[19] = (offset >> 8) & 0xFF;
+                header[20] = (offset >> 16) & 0xFF;
+                header[21] = (offset >> 24) & 0xFF;
+
+                // 合并头部和图像数据
+                const icoData = new Uint8Array(header.length + pngUint8Array.length);
+                icoData.set(header);
+                icoData.set(pngUint8Array, header.length);
+
+                // 创建下载链接
+                const blob = new Blob([icoData], { type: 'image/x-icon' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = file.name.replace(/\.[^/.]+$/, '') + '.ico';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+
+                alert(translations[document.documentElement.lang].success);
+            } catch (error) {
+                console.error('处理图片时出错:', error);
+                alert(translations[document.documentElement.lang].error + error.message);
+            } finally {
+                loading.style.display = 'none';
+                convertBtn.disabled = false;
+            }
+        });
+    </script>
+</body>
+</html> 
