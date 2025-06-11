@@ -270,6 +270,37 @@
             }
         };
 
+        // 获取用户语言
+        function getUserLanguage() {
+            // 1. 首先检查 URL 参数中是否有语言设置
+            const urlParams = new URLSearchParams(window.location.search);
+            const langParam = urlParams.get('lang');
+            if (langParam && translations[langParam]) {
+                return langParam;
+            }
+
+            // 2. 检查本地存储中是否有语言设置
+            const savedLang = localStorage.getItem('preferredLanguage');
+            if (savedLang && translations[savedLang]) {
+                return savedLang;
+            }
+
+            // 3. 获取浏览器语言
+            const browserLang = navigator.language || navigator.userLanguage;
+            const shortLang = browserLang.split('-')[0];
+            
+            // 4. 根据浏览器语言选择最匹配的语言
+            if (browserLang.includes('zh')) {
+                return 'zh-CN';
+            } else if (browserLang.includes('ja')) {
+                return 'ja';
+            } else if (browserLang.includes('ko')) {
+                return 'ko';
+            } else {
+                return 'en'; // 默认英语
+            }
+        }
+
         // 更新页面语言
         function updateLanguage(lang) {
             document.querySelectorAll('[data-i18n]').forEach(element => {
@@ -283,6 +314,12 @@
                 }
             });
             document.documentElement.lang = lang;
+            
+            // 更新语言选择器的值
+            document.getElementById('languageSelect').value = lang;
+            
+            // 保存语言偏好到本地存储
+            localStorage.setItem('preferredLanguage', lang);
         }
 
         // 语言切换事件
@@ -291,7 +328,10 @@
         });
 
         // 初始化语言
-        updateLanguage('zh-CN');
+        document.addEventListener('DOMContentLoaded', () => {
+            const userLang = getUserLanguage();
+            updateLanguage(userLang);
+        });
 
         const imageInput = document.getElementById('imageInput');
         const sizeSelect = document.getElementById('sizeSelect');
