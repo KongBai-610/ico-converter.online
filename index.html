@@ -271,33 +271,35 @@
         };
 
         // 获取用户语言
-        function getUserLanguage() {
-            // 1. 首先检查 URL 参数中是否有语言设置
-            const urlParams = new URLSearchParams(window.location.search);
-            const langParam = urlParams.get('lang');
-            if (langParam && translations[langParam]) {
-                return langParam;
-            }
-
-            // 2. 检查本地存储中是否有语言设置
+        async function getUserLanguage() {
+            // 1. 检查本地存储中是否有语言设置
             const savedLang = localStorage.getItem('preferredLanguage');
             if (savedLang && translations[savedLang]) {
                 return savedLang;
             }
 
-            // 3. 获取浏览器语言
-            const browserLang = navigator.language || navigator.userLanguage;
-            const shortLang = browserLang.split('-')[0];
-            
-            // 4. 根据浏览器语言选择最匹配的语言
-            if (browserLang.includes('zh')) {
-                return 'zh-CN';
-            } else if (browserLang.includes('ja')) {
-                return 'ja';
-            } else if (browserLang.includes('ko')) {
-                return 'ko';
-            } else {
-                return 'en'; // 默认英语
+            try {
+                // 2. 尝试获取 Cloudflare 地理位置信息
+                const response = await fetch('https://www.cloudflare.com/cdn-cgi/trace');
+                const data = await response.text();
+                const country = data.split('\n').find(line => line.startsWith('loc=')).split('=')[1];
+                
+                // 根据国家/地区代码选择语言
+                switch(country) {
+                    case 'CN':
+                    case 'HK':
+                    case 'TW':
+                    case 'MO':
+                        return 'zh-CN';
+                    case 'JP':
+                        return 'ja';
+                    case 'KR':
+                        return 'ko';
+                    default:
+                        return 'en'; // 默认使用英语
+                }
+            } catch (error) {
+                return 'en'; // 如果获取地理位置失败，默认使用英语
             }
         }
 
@@ -328,8 +330,8 @@
         });
 
         // 初始化语言
-        document.addEventListener('DOMContentLoaded', () => {
-            const userLang = getUserLanguage();
+        document.addEventListener('DOMContentLoaded', async () => {
+            const userLang = await getUserLanguage();
             updateLanguage(userLang);
         });
 
